@@ -41,7 +41,7 @@ def load_topics() -> list[Topic]:
         ]
 
 
-def select_topic(number: int, topics: list[Topic], requested_topic: Optional[str]) -> Topic:
+def select_topic(topics: list[Topic], requested_topic: Optional[str]) -> Topic:
     if requested_topic:
         for topic in topics:
             if topic.topic == requested_topic:
@@ -56,7 +56,11 @@ def select_topic(number: int, topics: list[Topic], requested_topic: Optional[str
     if not topics:
         raise SystemExit(f"No topics found: {TOPICS_PATH}")
 
-    index = (number - 1) % len(topics)
+    for topic in topics:
+        if not topic_note_exists(topic):
+            return topic
+
+    index = existing_note_count() % len(topics)
     return topics[index]
 
 
@@ -66,12 +70,25 @@ def safe_filename_part(value: str) -> str:
     return cleaned[:40] or "untitled"
 
 
-def existing_numbers() -> list[int]:
+def category_dir(topic: Topic) -> Path:
+    return DAILY_DIR / safe_filename_part(topic.category)
+
+
+def topic_note_exists(topic: Topic) -> bool:
+    directory = category_dir(topic)
+    if not directory.exists():
+        return False
+
+    filename_part = safe_filename_part(topic.topic)
+    return any(path.name[4:].removesuffix(".md").split("_v", 1)[0] == filename_part for path in directory.glob("*.md"))
+
+
+def existing_numbers(directory: Path) -> list[int]:
     numbers = []
-    if not DAILY_DIR.exists():
+    if not directory.exists():
         return numbers
 
-    for path in DAILY_DIR.glob("*.md"):
+    for path in directory.glob("*.md"):
         match = re.match(r"^(\d{3})_", path.name)
         if match:
             numbers.append(int(match.group(1)))
@@ -79,20 +96,26 @@ def existing_numbers() -> list[int]:
     return numbers
 
 
-def next_number() -> int:
-    numbers = existing_numbers()
+def next_number(directory: Path) -> int:
+    numbers = existing_numbers(directory)
     return max(numbers, default=0) + 1
 
 
-def next_available_path(number: int, topic: Topic) -> Path:
+def existing_note_count() -> int:
+    if not DAILY_DIR.exists():
+        return 0
+    return sum(1 for path in DAILY_DIR.rglob("*.md") if path.is_file())
+
+
+def next_available_path(directory: Path, number: int, topic: Topic) -> Path:
     base = f"{number:03d}_{safe_filename_part(topic.topic)}"
-    candidate = DAILY_DIR / f"{base}.md"
+    candidate = directory / f"{base}.md"
     if not candidate.exists():
         return candidate
 
     version = 2
     while True:
-        candidate = DAILY_DIR / f"{base}_v{version}.md"
+        candidate = directory / f"{base}_v{version}.md"
         if not candidate.exists():
             return candidate
         version += 1
@@ -113,10 +136,12 @@ def main() -> None:
     args = parse_args()
     topics = load_topics()
     DAILY_DIR.mkdir(exist_ok=True)
-    number = next_number()
-    topic = select_topic(number, topics, args.topic)
+    topic = select_topic(topics, args.topic)
+    directory = category_dir(topic)
+    directory.mkdir(parents=True, exist_ok=True)
+    number = next_number(directory)
 
-    path = next_available_path(number, topic)
+    path = next_available_path(directory, number, topic)
     path.write_text(render_template(number, topic), encoding="utf-8")
     print(path.relative_to(ROOT))
 

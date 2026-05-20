@@ -16,7 +16,7 @@ make daily
 make daily TOPIC="貨幣とは何か"
 ```
 
-生成されるファイルは `daily/001_テーマ.md`, `daily/002_テーマ.md` のような連番形式です。
+生成されるファイルは `daily/哲学/001_テーマ.md`, `daily/歴史/001_テーマ.md` のように、`topics/topics.csv` のカテゴリ別フォルダ内で連番になります。
 同じ名前のファイルがすでにある場合は上書きせず、`_v2`, `_v3` のように別名で作ります。
 
 SaaS開発向けのノートを作る:
@@ -35,7 +35,7 @@ make saas TOPIC="オンボーディングとは何か"
 
 ## 構成
 
-- `daily/`: 毎日の教養ノート
+- `daily/`: 毎日の教養ノート。`topics/topics.csv` のカテゴリに合わせてジャンル別に保存する
 - `saas/`: SaaS開発者向けのプロダクト・UX・事業・運用ノート
 - `topics/topics.csv`: 自動選出用のテーマ一覧
 - `topics/saas_topics.csv`: SaaS向けの自動選出用テーマ一覧
