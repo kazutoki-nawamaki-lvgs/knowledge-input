@@ -8,9 +8,9 @@ from typing import Optional
 
 
 ROOT = Path(__file__).resolve().parents[1]
-TOPICS_PATH = ROOT / "topics" / "topics.csv"
-TEMPLATE_PATH = ROOT / "templates" / "daily.md"
-DAILY_DIR = ROOT / "daily"
+TOPICS_PATH = ROOT / "topics" / "saas_topics.csv"
+TEMPLATE_PATH = ROOT / "templates" / "saas.md"
+SAAS_DIR = ROOT / "saas"
 
 
 @dataclass(frozen=True)
@@ -22,8 +22,8 @@ class Topic:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Create a daily liberal arts input note.")
-    parser.add_argument("--topic", help="Topic title. If omitted, one topic is selected from topics/topics.csv.")
+    parser = argparse.ArgumentParser(description="Create a SaaS product-development reading note.")
+    parser.add_argument("--topic", help="Topic title. If omitted, one topic is selected from topics/saas_topics.csv.")
     return parser.parse_args()
 
 
@@ -49,7 +49,7 @@ def select_topic(number: int, topics: list[Topic], requested_topic: Optional[str
         return Topic(
             category="未分類",
             topic=requested_topic,
-            question=f"{requested_topic}について、何を理解すると世界の見方が広がるか？",
+            question=f"{requested_topic}について、SaaS開発者として何を理解するとプロダクトの見方が変わるか？",
             keywords="",
         )
 
@@ -68,10 +68,10 @@ def safe_filename_part(value: str) -> str:
 
 def existing_numbers() -> list[int]:
     numbers = []
-    if not DAILY_DIR.exists():
+    if not SAAS_DIR.exists():
         return numbers
 
-    for path in DAILY_DIR.glob("*.md"):
+    for path in SAAS_DIR.glob("*.md"):
         match = re.match(r"^(\d{3})_", path.name)
         if match:
             numbers.append(int(match.group(1)))
@@ -86,13 +86,13 @@ def next_number() -> int:
 
 def next_available_path(number: int, topic: Topic) -> Path:
     base = f"{number:03d}_{safe_filename_part(topic.topic)}"
-    candidate = DAILY_DIR / f"{base}.md"
+    candidate = SAAS_DIR / f"{base}.md"
     if not candidate.exists():
         return candidate
 
     version = 2
     while True:
-        candidate = DAILY_DIR / f"{base}_v{version}.md"
+        candidate = SAAS_DIR / f"{base}_v{version}.md"
         if not candidate.exists():
             return candidate
         version += 1
@@ -112,7 +112,7 @@ def render_template(number: int, topic: Topic) -> str:
 def main() -> None:
     args = parse_args()
     topics = load_topics()
-    DAILY_DIR.mkdir(exist_ok=True)
+    SAAS_DIR.mkdir(exist_ok=True)
     number = next_number()
     topic = select_topic(number, topics, args.topic)
 
