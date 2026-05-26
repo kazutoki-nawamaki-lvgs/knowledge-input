@@ -55,6 +55,12 @@ make saas TOPIC="オンボーディングとは何か"
 - `scripts/new_daily.py`: ノート生成スクリプト
 - `scripts/new_saas.py`: SaaS向けノート生成スクリプト
 
+## トピック追加の方針
+
+新しいジャンルや `topics/*.csv` のテーマを追加するときは、既存のトピックと主題が重なっていないか確認します。
+
+近い題材を扱う場合でも、ジャンルごとに切り口を分けます。たとえば SaaS はプロダクト価値・事業・運用・開発判断、Product UI / UX Patterns は画面構造・操作パターン・情報設計、Design System はコンポーネント・トークン・運用、Frontend Architecture は実装設計・責務分離、Accessibility は利用可能性・支援技術・アクセシブルな操作に寄せます。
+
 ## ノートの基本方針
 
 `daily/` の各ノートは次の流れで書きます。
