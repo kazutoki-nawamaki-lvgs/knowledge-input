@@ -10,7 +10,7 @@ from typing import Optional
 ROOT = Path(__file__).resolve().parents[1]
 TOPICS_PATH = ROOT / "topics" / "topics.csv"
 TEMPLATE_PATH = ROOT / "templates" / "daily.md"
-DAILY_DIR = ROOT / "daily"
+LIBERAL_ARTS_DIR = ROOT / "liberal-arts"
 
 
 @dataclass(frozen=True)
@@ -22,7 +22,7 @@ class Topic:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Create a daily liberal arts input note.")
+    parser = argparse.ArgumentParser(description="Create a liberal arts input note.")
     parser.add_argument("--topic", help="Topic title. If omitted, one topic is selected from topics/topics.csv.")
     return parser.parse_args()
 
@@ -71,7 +71,7 @@ def safe_filename_part(value: str) -> str:
 
 
 def category_dir(topic: Topic) -> Path:
-    return DAILY_DIR / safe_filename_part(topic.category)
+    return LIBERAL_ARTS_DIR / safe_filename_part(topic.category)
 
 
 def topic_note_exists(topic: Topic) -> bool:
@@ -102,9 +102,9 @@ def next_number(directory: Path) -> int:
 
 
 def existing_note_count() -> int:
-    if not DAILY_DIR.exists():
+    if not LIBERAL_ARTS_DIR.exists():
         return 0
-    return sum(1 for path in DAILY_DIR.rglob("*.md") if path.is_file())
+    return sum(1 for path in LIBERAL_ARTS_DIR.rglob("*.md") if path.is_file())
 
 
 def next_available_path(directory: Path, number: int, topic: Topic) -> Path:
@@ -135,7 +135,7 @@ def render_template(number: int, topic: Topic) -> str:
 def main() -> None:
     args = parse_args()
     topics = load_topics()
-    DAILY_DIR.mkdir(exist_ok=True)
+    LIBERAL_ARTS_DIR.mkdir(exist_ok=True)
     topic = select_topic(topics, args.topic)
     directory = category_dir(topic)
     directory.mkdir(parents=True, exist_ok=True)

@@ -1,13 +1,14 @@
 # knowledge-input
 
-毎日ひとつの問いを起点にした教養ノートと、SaaS開発・プロダクト運用・チーム共有に使える実務ノートを、Markdownで育てていくファイルベースの知識ベースです。
+教養、SaaS、UI/UX、デザインシステム、フロントエンド設計、アクセシビリティの学習ノートを、Markdownで育てていくファイルベースの知識ベースです。
 
-このリポジトリは、単なる個人メモではなく、あとからチームメンバーが読んでも判断材料として使えるドキュメントを残すことを目的にしています。`daily/` では歴史・哲学などの広い問いを扱い、`saas/` ではプロダクト設計、ユーザー理解、事業、運用、開発判断に直接つながるテーマを扱います。
+このリポジトリは、単なる個人メモではなく、あとからチームメンバーが読んでも判断材料として使えるドキュメントを残すことを目的にしています。`liberal-arts/` では歴史・哲学などの広い問いを扱い、`saas/` ではプロダクト設計、ユーザー理解、事業、運用、開発判断に直接つながるテーマを扱います。その他のジャンルでは、画面設計、コンポーネント設計、実装設計、アクセシビリティなどを役割ごとに分けて扱います。
 
 ## このリポジトリで扱うもの
 
 - 個人の視野を広げるための教養ノート
 - SaaS開発者・プロダクトチーム向けの読み物
+- UI/UX、デザインシステム、フロントエンド設計、アクセシビリティのテーマ別ノート
 - チーム内で前提をそろえるための共有ドキュメント
 - 意思決定や改善の前に読み返せる判断材料
 
@@ -21,13 +22,15 @@
 make daily
 ```
 
+`daily` は以前からのコマンド名として残しています。ジャンル名に合わせて作る場合は、同じ処理を `make liberal-arts` でも実行できます。
+
 テーマを指定して作る:
 
 ```sh
 make daily TOPIC="貨幣とは何か"
 ```
 
-生成されるファイルは `daily/哲学/001_テーマ.md`, `daily/歴史/001_テーマ.md` のように、`topics/topics.csv` のカテゴリ別フォルダ内で連番になります。
+生成されるファイルは `liberal-arts/哲学/001_テーマ.md`, `liberal-arts/歴史/001_テーマ.md` のように、`topics/topics.csv` のカテゴリ別フォルダ内で連番になります。
 同じ名前のファイルがすでにある場合は上書きせず、`_v2`, `_v3` のように別名で作ります。
 
 SaaS開発・プロダクトチーム向けのノートを作る:
@@ -44,16 +47,43 @@ make saas TOPIC="オンボーディングとは何か"
 
 生成されるファイルは `saas/001_テーマ.md`, `saas/002_テーマ.md` のような連番形式です。
 
+フロントエンド・UI設計系のノートを作る:
+
+```sh
+make design-system
+make frontend-architecture
+make product-ui-ux
+make accessibility
+```
+
+テーマを指定する場合は、他のコマンドと同じように `TOPIC` を渡します。
+
+```sh
+make design-system TOPIC="デザイントークンは何を解決するのか"
+```
+
+生成されるファイルは `design-system/001_テーマ.md`, `frontend-architecture/001_テーマ.md` のような連番形式です。
+
 ## 構成
 
-- `daily/`: 毎日の教養ノート。`topics/topics.csv` のカテゴリに合わせてジャンル別に保存する
+- `liberal-arts/`: 教養ノート。`topics/topics.csv` のカテゴリに合わせてジャンル別に保存する
 - `saas/`: SaaS開発者・プロダクトチーム向けのプロダクト・UX・事業・運用ノート
+- `product-ui-ux-patterns/`: 画面構造、操作パターン、情報設計に関するノート
+- `design-system/`: コンポーネント、トークン、デザインシステム運用に関するノート
+- `frontend-architecture/`: 実装設計、責務分離、状態管理、テストに関するノート
+- `accessibility/`: 利用可能性、支援技術、アクセシブルな操作に関するノート
 - `topics/topics.csv`: 自動選出用のテーマ一覧
 - `topics/saas_topics.csv`: SaaS向けの自動選出用テーマ一覧
+- `topics/product_ui_ux_patterns_topics.csv`: Product UI / UX Patterns向けのテーマ一覧
+- `topics/design_system_topics.csv`: Design System向けのテーマ一覧
+- `topics/frontend_architecture_topics.csv`: Frontend Architecture向けのテーマ一覧
+- `topics/accessibility_topics.csv`: Accessibility向けのテーマ一覧
 - `templates/daily.md`: 生成されるノートのテンプレート
 - `templates/saas.md`: SaaS向けノートのテンプレート
+- `templates/practical.md`: フロントエンド・UI設計系ノートの共通テンプレート
 - `scripts/new_daily.py`: ノート生成スクリプト
 - `scripts/new_saas.py`: SaaS向けノート生成スクリプト
+- `scripts/new_track_note.py`: フロントエンド・UI設計系ノートの共通生成スクリプト
 
 ## トピック追加の方針
 
@@ -63,7 +93,7 @@ make saas TOPIC="オンボーディングとは何か"
 
 ## ノートの基本方針
 
-`daily/` の各ノートは次の流れで書きます。
+`liberal-arts/` の各ノートは次の流れで書きます。
 
 - 今日の問い
 - 読む前の見取り図
@@ -94,7 +124,7 @@ make saas TOPIC="オンボーディングとは何か"
 Codexに本文作成を頼むときは、次のように依頼するとよいです。
 
 ```text
-daily/001_テーマ.md を、箇条書きではなく、読んで満足できる教養読み物として本文まで埋めて。
+liberal-arts/哲学/001_テーマ.md を、箇条書きではなく、読んで満足できる教養読み物として本文まで埋めて。
 前後のつながり、具体例、現代への接続を重視して。
 長いセクションは `###` の小見出しで分けて、論点ごとに読み返しやすくして。
 ```
