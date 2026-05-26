@@ -41,7 +41,7 @@ def load_topics() -> list[Topic]:
         ]
 
 
-def select_topic(number: int, topics: list[Topic], requested_topic: Optional[str]) -> Topic:
+def select_topic(topics: list[Topic], requested_topic: Optional[str]) -> Topic:
     if requested_topic:
         for topic in topics:
             if topic.topic == requested_topic:
@@ -56,7 +56,11 @@ def select_topic(number: int, topics: list[Topic], requested_topic: Optional[str
     if not topics:
         raise SystemExit(f"No topics found: {TOPICS_PATH}")
 
-    index = (number - 1) % len(topics)
+    for topic in topics:
+        if not topic_note_exists(topic):
+            return topic
+
+    index = len(existing_numbers()) % len(topics)
     return topics[index]
 
 
@@ -77,6 +81,20 @@ def existing_numbers() -> list[int]:
             numbers.append(int(match.group(1)))
 
     return numbers
+
+
+def topic_note_exists(topic: Topic) -> bool:
+    if not SAAS_DIR.exists():
+        return False
+
+    filename_part = safe_filename_part(topic.topic)
+    for path in SAAS_DIR.glob("*.md"):
+        if path.name == "README.md":
+            continue
+        current = path.name[4:].removesuffix(".md").split("_v", 1)[0]
+        if current == filename_part:
+            return True
+    return False
 
 
 def next_number() -> int:
@@ -114,7 +132,7 @@ def main() -> None:
     topics = load_topics()
     SAAS_DIR.mkdir(exist_ok=True)
     number = next_number()
-    topic = select_topic(number, topics, args.topic)
+    topic = select_topic(topics, args.topic)
 
     path = next_available_path(number, topic)
     path.write_text(render_template(number, topic), encoding="utf-8")
