@@ -1,0 +1,7 @@
+.env
+.DS_Store
+*.mp3
+*.wav
+*.aac
+*.flac
+*.opus
